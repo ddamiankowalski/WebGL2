@@ -1,15 +1,7 @@
-# 🚀 Welcome to your new awesome project!
+# WebGL tests
 
-This project has been created using **webpack-cli**, you can now run
-
-```
-npm run build
-```
-
-or
+Start a project on a local dev server using
 
 ```
-yarn build
+npm run serve
 ```
-
-to bundle your application
