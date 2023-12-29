@@ -3,6 +3,27 @@
     <head>
         <meta charset="utf-8" />
         <title>OpenGL tutorial</title>
+
+        <script id="vertex-shader" type="notjs">
+            attribute vec4 a_position;
+
+            void main()
+            {
+                gl_Position = a_position;
+            }
+        </script>
+
+        <script id="fragment-shader" type="notjs">
+            precision mediump float;
+
+            uniform vec3 u_color;
+
+            void main()
+            {
+                gl_FragColor = vec4(u_color, 1);
+            }
+        </script>
+
     </head>
     <body>
         <canvas width="800" height="400" id="webgl"></canvas>
