@@ -44,54 +44,47 @@ const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSrc);
 let program = createProgram(vertexShader, fragmentShader);
 
 let positionAttribLoc = gl.getAttribLocation(program, "a_position");
+let colorAttribLoc = gl.getAttribLocation(program, "a_color");
 
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
 let points = [
-    -0.5, -0.5,
-     0.5,  0.5,
-     0.5, -0.5,
-    -0.5,  0.5,
-     0.5,  0.5,
-    -0.5, -0.5
+    -0.5, -0.5, 1, 0, 0,
+     0.5,  0.5, 1, 0, 0,
+     0.5, -0.5, 1, 0, 0,
+    -0.5,  0.5, 1, 0, 0,
+     0.5,  0.5, 1, 0, 0,
+    -0.5, -0.5, 1, 0, 0
 ];
 
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 gl.useProgram(program);
-
 gl.enableVertexAttribArray(positionAttribLoc);
+gl.enableVertexAttribArray(colorAttribLoc);
+
+let colorSize = 3;
+let colorTyp = gl.FLOAT;
+let colorNormalize = false;
+let colorStride = 20;
+let colorOffset = 4 * 3;
+
+gl.vertexAttribPointer(colorAttribLoc, colorSize, colorTyp, colorNormalize, colorStride, colorOffset);
 
 let size = 2;
 let type = gl.FLOAT;
 let normalize = false;
-let stride = 0;
+let stride = 20;
 let offset = 0;
 
-const setRect = (gl) => {
-    let x1 = Math.random() - 1;
-    let y1 = Math.random() - 1;
-    let x2 = x1 + 0.5;
-    let y2 = y1 + 0.5;
+gl.vertexAttribPointer(positionAttribLoc, size, type, normalize, stride, offset);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        x1, y1,
-        x2, y1,
-        x1, y2,
-        x1, y2,
-        x2, y1,
-        x2, y2]), gl.STATIC_DRAW);
-}
+const colorLoc = gl.getUniformLocation(program, "u_color");
+gl.uniform3f(colorLoc, 1, 0, 0);
 
-for (let i = 0; i < 10; i++) {
-    let colorUniformLoc = gl.getUniformLocation(program, "u_color");
-    gl.uniform3f(colorUniformLoc, Math.random(), Math.random(), Math.random());
-    setRect(gl);
-
-    gl.vertexAttribPointer(positionAttribLoc, size, type, normalize, stride, offset);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-}
+gl.drawArrays(gl.TRIANGLES, 0, 6);
