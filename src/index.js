@@ -44,6 +44,7 @@ function main() {
 
 function render(image) {
     const gl = program.gl;
+    gl.useProgram(program.program);
 
     const imageLocation = program.getUniformLocation('u_image');
 
@@ -82,7 +83,6 @@ function render(image) {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.useProgram(program.program);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
