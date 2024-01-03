@@ -5,6 +5,7 @@ const vertexShaderSrc = `#version 300 es
 
 uniform vec2 u_resolution;
 uniform vec2 u_translation;
+uniform vec2 u_rotation;
 
 in vec2 a_texCoord;
 in vec4 a_position;
@@ -13,7 +14,14 @@ out vec2 v_texCoord;
 
 void main()
 {
-    gl_Position = a_position + vec4(u_translation, 0.0, 1.0);
+    vec2 rotatedPosition = vec2(
+        a_position.x * u_rotation.y + a_position.y * u_rotation.x,
+        a_position.y * u_rotation.y - a_position.x * u_rotation.x
+    );
+
+    vec2 position = rotatedPosition + u_translation;
+
+    gl_Position = vec4(position, 0.0, 1.0);
     v_texCoord = a_texCoord;
 }
 `
@@ -39,7 +47,6 @@ const gl = canvas.getContext("webgl2");
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 const program = new WebGLCustomProgram(gl, vertexShaderSrc, fragmentShaderSrc);
 
-let translation = [0, 0];
 let width = 100;
 let height = 30;
 let color = [Math.random(), Math.random(), Math.random(), 1];
@@ -57,6 +64,8 @@ function render(image) {
 
     const imageLocation = program.getUniformLocation('u_image');
     const translationLocation = program.getUniformLocation('u_translation');
+    const rotationLocation = program.getUniformLocation('u_rotation');
+    const resolutionLocation = program.getUniformLocation('u_resolution');
 
     const positionAttribLoc = program.getAttributeLocation('a_position');
     const positionBuffer = program.createBuffer();
@@ -96,11 +105,15 @@ function render(image) {
 
     gl.uniform1i(imageLocation, 0);
 
+    let rotation = 0;
+
     setInterval(() => {
-        let translation = [Math.random() - 0.5, Math.random() - 0.5];
-        gl.uniform2fv(translationLocation, translation);
+        gl.uniform2f(resolutionLocation, gl.canvas.width, gl,canvas.height);
+        gl.uniform2fv(rotationLocation, [Math.sin(rotation), Math.cos(rotation)]);
         drawScene();
-    }, 10);
+
+        rotation += 0.01;
+    }, 0);
 }
 
 function drawScene() {
